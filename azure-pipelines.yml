@@ -20,3 +20,9 @@ steps:
     python -m pip install --upgrade pip
     pip install -r requirements.txt
   displayName: 'Install dependencies'
+
+- task: PythonScript@0
+  inputs:
+    scriptSource: 'filePath'
+    scriptPath: 'src/scan.py'
+    arguments: '-url $(api-url) -token $(api-token) -ticker $(ticker)'
