@@ -22,8 +22,8 @@ strategy:
 steps:
 - task: UsePythonVersion@0
   inputs:
-    versionSpec: '$(python.version)'
-  displayName: 'Use Python $(python.version)'
+    versionSpec: '3.7'
+  displayName: 'Use Python 3.7'
 
 - script: |
     python -m pip install --upgrade pip
