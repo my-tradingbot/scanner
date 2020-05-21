@@ -24,5 +24,5 @@ steps:
 - task: PythonScript@0
   inputs:
     scriptSource: 'filePath'
-    scriptPath: 'src/scan.py'
-    arguments: '-url $(api-url) -token $(api-token) -ticker $(ticker)'
+    scriptPath: 'src/scanner.py'
+    arguments: '-url $(alpaca-url) -tokenid $(alpaca-token-id) -tokensecret $(alpaca-token-secret)'
