@@ -40,17 +40,16 @@ def main():
     parser.add_argument('-tokensecret', dest='tokensecret', help='API Token Secret')
     args = parser.parse_args()
 
-
-    try:
-        url = os.environ["ALPACAURL"]
-        token_id = os.environ["ALPACATOKENID"]
-        token_secret = os.environ["ALPACATOKENSECRET"]
-    except:
-        raise ValueError("No enviromental variables configured, please rerun the scanner with API credentials")
-
     if args.url and args.tokenid and args.tokensecret:
         url, token_id, token_secret = args.url,args.tokenid,args.tokensecret
 
+    else:
+        try:
+            url = os.environ["ALPACAURL"]
+            token_id = os.environ["ALPACATOKENID"]
+            token_secret = os.environ["ALPACATOKENSECRET"]
+        except:
+            raise ValueError("No enviromental variables configured, please rerun the scanner with API credentials")
 
     headers = {
         "APCA-API-KEY-ID": token_id,
