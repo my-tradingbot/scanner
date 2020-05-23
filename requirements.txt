@@ -1,3 +1,6 @@
 requests==2.22.0
 urllib3==1.24.3
 alpaca_trade_api==0.48
+flask==1.1.2
+converters==0.0.1
+pyOpenSSL==19.1.0

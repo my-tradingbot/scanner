@@ -1,6 +1,8 @@
+from flask import Blueprint, request
+from flask import json
 import argparse
 import os
-import alpaca_trade_api as tradeapi
+import alpaca_trade_api as alpacaapi
 
 from common import BaseClient
 
@@ -13,8 +15,11 @@ from common import BaseClient
     python3 scan.py -l -url "https://paper-api.alpaca.markets" -keyid "yourkeyid" -keysecret "keysecret"
 """
 
+BASE_URL = '/scan/'.strip('/')
+scan = Blueprint('scanner', __name__)
 
-class Client(BaseClient):
+
+class AlpacaClient(BaseClient):
 
     def query(self, suffix):
         res = self._http_request(
@@ -24,51 +29,62 @@ class Client(BaseClient):
         return res
 
 
-def test_api(client):
+@scan.route(f'/{BASE_URL}/test', methods=['GET'])
+def test_api():
     try:
-        market_clock = client.query('clock')
-        return 'Test is Successful'
+        test_request = json.loads(request.data.decode())
+
+        if test_request.get('API') == 'alpaca':
+            url = test_request.get('API-URL')
+            headers = {
+                "APCA-API-KEY-ID": test_request.get('API-TOKEN-ID'),
+                "APCA-API-SECRET-KEY": test_request.get('API-TOKEN-SECRET')
+            }
+            try:
+                client = AlpacaClient(
+                    base_url=url,
+                    verify=False,
+                    headers=headers,
+                    ok_codes=(200, 201, 204),
+                )
+            except Exception as e:
+                raise (str(f'Failed to connect to the API. Error: {str(e)}'))
+
+            return f"Alpaca API Test is Successful, Market TimeStamp:  {client.query('clock')['timestamp']}"
+        else:
+            return {
+                'error': 'This API Request is not Currently Supported'
+            }
+
     except ConnectionError as err_msg:
         raise ConnectionError(err_msg)
 
 
-def main():
-
-    parser = argparse.ArgumentParser(description="ALPACA API Login Session Parameters")
-    parser.add_argument('-url', dest='url', help='API URL')
-    parser.add_argument('-tokenid', dest='tokenid', help='API Token ID')
-    parser.add_argument('-tokensecret', dest='tokensecret', help='API Token Secret')
-    args = parser.parse_args()
-
-    if args.url and args.tokenid and args.tokensecret:
-        url, token_id, token_secret = args.url,args.tokenid,args.tokensecret
-
-    else:
-        try:
-            url = os.environ["ALPACAURL"]
-            token_id = os.environ["ALPACATOKENID"]
-            token_secret = os.environ["ALPACATOKENSECRET"]
-        except:
-            raise ValueError("No enviromental variables configured, please rerun the scanner with API credentials")
-
-    headers = {
-        "APCA-API-KEY-ID": token_id,
-        "APCA-API-SECRET-KEY": token_secret
-    }
-
+@scan.route(f'/{BASE_URL}/account/positions', methods=['GET'])
+def get_account():
     try:
-        client = Client(
-            base_url=url,
-            verify=False,
-            headers=headers,
-            ok_codes=(200, 201, 204),
-        )
-    except Exception as e:
-        raise (str(f'Failed to execute your command. Error: {str(e)}'))
+        get_account_request = json.loads(request.data.decode())
 
-    print(test_api(client))
+        if get_account_request.get('API') == 'alpaca':
+            try:
+                session = alpacaapi.REST(
+                    base_url=get_account_request.get('API-URL'),
+                    key_id=get_account_request.get('API-TOKEN-ID'),
+                    secret_key=get_account_request.get('API-TOKEN-SECRET')
+                )
+                account = session.get_account()
+                try:
+                    return account.list_positions()
+                except Exception as e:
+                    raise ValueError('No Positions Opened')
+                return 'test'
+            except Exception as e:
+                raise ConnectionError (str(f'Failed to connect to the API. Error: {str(e)}'))
+        else:
+            return {
+                'error': 'This API Request is not Currently Supported'
+            }
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
-    main()
-
+    except ConnectionError as err_msg:
+        raise ConnectionError(err_msg)
