@@ -2,6 +2,7 @@
 
 from flask import Flask, Response, jsonify, Request
 import argparse
+import pytest
 
 # Scanner Imports
 from scanner import scan
@@ -55,13 +56,13 @@ def internal_server_error(e):
     return response
 
 
-# Blueprints registration
-app.register_blueprint(scan)
-
-
 @app.route('/test')
 def test_json():
     return {'code': 1, 'message': 'Server is a live', 'status': 200}
+
+
+# Blueprints registration
+app.register_blueprint(scan)
 
 
 def create_app(host, port, debug):
@@ -73,9 +74,9 @@ def create_app(host, port, debug):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Trading Listener Parameters")
-    parser.add_argument('-ip', dest='ip', help='Listener IP')
+    parser.add_argument('-host', dest='host', help='Listener IP')
     parser.add_argument('-port', dest='port', help='Listener IP')
     parser.add_argument('-debug', dest='debug', help='True to Enable Debug')
     args = parser.parse_args()
-    app = create_app()
+    app = create_app(host=args.host, port=args.port, debug=args.debug)
 

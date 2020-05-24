@@ -17,7 +17,8 @@ def test_server():
         mock.get(f'{ALPACA_URL}/v2/clock', json=alpaca_clock_response)
 
     client = server.create_app(host='0.0.0.0',port='5000',debug=True)
-    request=client.test_client()
+    client.config['Testing'] = True
+    request = client.test_client()
     _, outputs, _ = request.get('/scan/test',json={
             "API": "alpaca",
             "API-URL": "https://paper-api.alpaca.markets",
