@@ -22,7 +22,7 @@ steps:
   displayName: 'Install dependencies'
 
 - script: |
-    pytest tests/test_basic.py
+    pytest test_basic.py
   displayName: 'Run The Test'
 
 
