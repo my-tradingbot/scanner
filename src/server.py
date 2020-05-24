@@ -2,7 +2,6 @@
 
 from flask import Flask, Response, jsonify, Request
 import argparse
-import os
 
 # Scanner Imports
 from scanner import scan
@@ -65,11 +64,18 @@ def test_json():
     return {'code': 1, 'message': 'Server is a live', 'status': 200}
 
 
+def create_app(host, port, debug):
+    flask_app = Flask(__name__)
+    flask_app.run(host=host, port=port, debug=debug, ssl_context='adhoc')
+    flask_app.app_context().push()
+    return flask_app
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Trading Listener Parameters")
     parser.add_argument('-ip', dest='ip', help='Listener IP')
     parser.add_argument('-port', dest='port', help='Listener IP')
     parser.add_argument('-debug', dest='debug', help='True to Enable Debug')
     args = parser.parse_args()
-    app.run(host=args.ip, port=args.port, debug=args.debug, ssl_context='adhoc')
+    app = create_app()
 
