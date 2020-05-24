@@ -9,7 +9,7 @@ def load_test_data(json_path):
 
 
 def test_server():
-    import server
+    from . import server
     import requests_mock
 
     with requests_mock.Mocker() as mock:
