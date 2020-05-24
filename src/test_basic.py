@@ -13,7 +13,7 @@ def test_server():
     import requests_mock
 
     with requests_mock.Mocker() as mock:
-        alpaca_clock_response = load_test_data('./test_data/alpaca_clock.json')
+        alpaca_clock_response = load_test_data('./src/test_data/alpaca_clock.json')
         mock.get(f'{ALPACA_URL}/v2/clock', json=alpaca_clock_response)
 
     client = server.create_app(host='0.0.0.0',port='5000',debug=True)
