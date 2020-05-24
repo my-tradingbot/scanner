@@ -26,3 +26,7 @@ steps:
     scriptSource: 'filePath'
     scriptPath: 'src/server.py'
     arguments: '-ip $(ip) -port $(port) -debug $(debug)'
+
+- scrip: |
+    kill $(lsof -i :5000 | awk 'NR==2 {print $2}')
+  displayName: 'Stop The service'
