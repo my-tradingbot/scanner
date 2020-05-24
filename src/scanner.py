@@ -1,7 +1,5 @@
 from flask import Blueprint, request
 from flask import json
-import argparse
-import os
 import alpaca_trade_api as alpacaapi
 
 from common import BaseClient

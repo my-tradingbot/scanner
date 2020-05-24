@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
 from flask import Flask, Response, jsonify
-import converters
+import argparse
+import os
 
 # Scanner Imports
 from scanner import scan
@@ -65,5 +66,10 @@ def test_json():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True, ssl_context='adhoc')
+    parser = argparse.ArgumentParser(description="Trading Listener Parameters")
+    parser.add_argument('-ip', dest='ip', help='Listener IP')
+    parser.add_argument('-port', dest='port', help='Listener IP')
+    parser.add_argument('-debug', dest='debug', help='True to Enable Debug')
+    args = parser.parse_args()
+    app.run(host=args.ip, port=args.port, debug=args.debug, ssl_context='adhoc')
 
