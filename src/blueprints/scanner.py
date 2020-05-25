@@ -2,7 +2,7 @@ from flask import Blueprint, request
 from flask import json
 import alpaca_trade_api as alpacaapi
 
-from common import BaseClient
+from .common import BaseClient
 
 """
     Create a new login session by setting environmental variables or using the login command
