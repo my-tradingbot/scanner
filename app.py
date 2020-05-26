@@ -11,6 +11,6 @@ if __name__ == '__main__':
     parser.add_argument('-port', dest='port', help='Listener IP')
     parser.add_argument('-debug', dest='debug', help='True to Enable Debug')
     args = parser.parse_args()
-    app.run(host=args.host, port=args.port, debug=args.debug, ssl_context='adhoc')
+    app.run(host=args.host, port=args.port, debug=args.debug or True, ssl_context='adhoc')
 
 

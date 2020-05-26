@@ -22,7 +22,7 @@ class AlpacaClient(BaseClient):
     def query(self, suffix):
         res = self._http_request(
             method='Get',
-            url_suffix='/v2/'+suffix
+            url_suffix=suffix
         )
         return res
 
@@ -49,6 +49,45 @@ def test_api():
                 raise (str(f'Failed to connect to the API. Error: {str(e)}'))
 
             return f"Alpaca API Test is Successful, Market TimeStamp:  {client.query('clock')['timestamp']}"
+        else:
+            return {
+                'error': 'This API Request is not Currently Supported'
+            }
+
+    except ConnectionError as err_msg:
+        raise ConnectionError(err_msg)
+
+
+@scan.route(f'/{BASE_URL}/bars', methods=['GET'])
+def get_bars():
+    try:
+        bars_request = json.loads(request.data.decode())
+
+        if bars_request.get('API') == 'alpaca':
+            url = bars_request.get('API-URL')
+            headers = {
+                "APCA-API-KEY-ID": bars_request.get('API-TOKEN-ID'),
+                "APCA-API-SECRET-KEY": bars_request.get('API-TOKEN-SECRET')
+            }
+            try:
+                client = AlpacaClient(
+                    base_url=url,
+                    verify=False,
+                    headers=headers,
+                    ok_codes=(200, 201, 204),
+                )
+            except Exception as e:
+                raise (str(f'Failed to connect to the API. Error: {str(e)}'))
+
+            query_symbols = bars_request['Query'].get('symbols')
+            query_limit = bars_request['Query'].get('limit')
+            query_start = bars_request['Query'].get('start')
+            query_end = bars_request['Query'].get('end')
+            query_after = bars_request['Query'].get('after')
+            query_until = bars_request['Query'].get('until')
+            query_timeframe = bars_request['Query'].get('timeframe')
+
+            return client.query('bars/'+query_timeframe+'?'+'symbols='+query_symbols+'&'+'limit='+query_limit)
         else:
             return {
                 'error': 'This API Request is not Currently Supported'
